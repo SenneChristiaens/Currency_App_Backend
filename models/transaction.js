@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-const transansactionSchema = new Schema({
+const transactionSchema = new Schema({
     sender:  String,
     receiver: String,
     amount: String,
