@@ -3,32 +3,30 @@ const Transaction = require('../models/transaction');
 //GET
 const get = async (req, res) => {
     let response;
-    if(req.query.user != undefined) {
+    if(req.body.user != undefined) {
     response = {
                 status: "success",
                 message: "GETTING transactions",
                 data: {
-                    transactions: await Transaction.find({ $or: [{ sender: username }, { receiver: username }] })
+                    transactions: await Transaction.find({ $or: [{ sender: req.body.user }, { receiver: req.body.user }] })
                 }
     }
+    if (response.data.transactions.length){
+        res.json(response);
+        } else {
+        res.send({
+            status: "error",
+            error: "No transactions found"
+    
+        });
+        }
     } 
-    else {
-    response = {
+    else if(req.body.user == undefined) {
+    res.send({
                 status: "error",
                 message: "No Authentication"
-            }
+            })
     };
-
-
-    if (response.data.transactions.length){
-    res.json(response);
-    } else {
-    res.send({
-        status: "error",
-        error: "No transactions found"
-
-    });
-    }
 }
 
 const getById = async (req, res) => {
