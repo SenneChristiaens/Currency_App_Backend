@@ -8,17 +8,14 @@ const get = async (req, res) => {
                 status: "success",
                 message: "GETTING transactions",
                 data: {
-                    transactions: await Transaction.find({ username: sender || receiver })
+                    transactions: await Transaction.find({ $or: [{ sender: username }, { receiver: username }] })
                 }
     }
     } 
     else {
     response = {
-                status: "success",
-                message: "GETTING transactions",
-                data: {
-                    transactions: await Transaction.find({})
-                }
+                status: "error",
+                message: "No Authentication"
             }
     };
 
