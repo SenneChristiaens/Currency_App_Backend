@@ -6,9 +6,9 @@ const get = async (req, res) => {
     if(req.query.user != undefined) {
     response = {
                 status: "success",
-                message: "GETTING transactions from username " + userName,
+                message: "GETTING transactions",
                 data: {
-                    transactions: await this.find({ username: sender || receiver })
+                    transactions: await Transaction.find({ username: sender || receiver })
                 }
     }
     } 
@@ -17,7 +17,7 @@ const get = async (req, res) => {
                 status: "success",
                 message: "GETTING transactions",
                 data: {
-                    transactions: await this.find({})
+                    transactions: await Transaction.find({})
                 }
             }
     };
@@ -39,7 +39,7 @@ const getById = async (req, res) => {
                     status: "success",
                     message: "GETTING transaction " + searchId,
                     data: {
-                        transactions: await this.find({ id: searchId })
+                        transactions: await Transaction.find({ id: searchId })
                     }
                 };
     // check if transaction exists
@@ -57,9 +57,9 @@ const getById = async (req, res) => {
 const getByUser = async (req, res) => {
     const response = {
                     status: "success",
-                    message: "GETTING transactions from username " + userName,
+                    message: "GETTING transactions from username ",
                     data: {
-                        transactions: await this.find({ username: sender || receiver })
+                        transactions: await Transaction.find({ $or: [{ sender: username }, { receiver: username }] })
                     }
                 };
     // check if transaction exists
@@ -83,7 +83,7 @@ const create = async (req, res) => {
     t.sender = sender;
     t.receiver = receiver;
     t.amount = amount;
-    t.id =  await Transaction.getSize();
+    // t.id =  await this.get.data.transactions.size();
 
     // check if transaction is empty
     if (t.sender != "" || t.receiver != "" || t.amount != ""){
@@ -114,60 +114,7 @@ const create = async (req, res) => {
     }
 }
 
-// //UPDATE
-// const update = async (req, res) => {
-//     const response = await Message.getById(req.params.id);  
-//     // check if message exists
-//     if(response.data.messages.length) {
-//     // check if message is empty
-//     if (req.body.message != ""){
-//         let m = response.data.messages[0];
-//         m.message = req.body.message;
-//         await m.save();
-//         res.send({
-//         status: "success",
-//         message: "UPDATING a message with id " + req.params.id
-
-//         });
-//     } else {
-//         res.send({
-//         status: "error",
-//         error: "please provide a message"
-
-//         });
-//     }
-//     } else {
-//     res.send({
-//         status: "error",
-//         error: "no message found with id " + req.params.id
-
-//     });
-//     }
-// }
-
-// //DELETE
-// const remove = async (req, res) => {
-//     const m = await Message.getById(req.params.id);
-//     // check if message exists
-//     if (m.data.messages.length){
-//     await Message.deleteOne({ id: req.params.id});
-//     res.send({
-//         status: "success",
-//         message: "DELETING message with id " + req.params.id
-
-//     });
-//     } else {
-//     res.send({
-//         status: "error",
-//         error: "no message found with id " + req.params.id
-
-//     });
-//     }
-// }
-
-
 module.exports.get = get;
 module.exports.getById = getById;
+module.exports.getByUser = getByUser;
 module.exports.create = create;
-// module.exports.update = update;
-// module.exports.remove = remove;
