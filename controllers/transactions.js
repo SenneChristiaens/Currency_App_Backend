@@ -30,23 +30,38 @@ const get = async (req, res) => {
 }
 
 const getById = async (req, res) => {
-    const response = {
-                    status: "success",
-                    message: "GETTING transaction " + searchId,
-                    data: {
-                        transactions: await Transaction.find({ id: searchId })
-                    }
-                };
-    // check if transaction exists
-    if (response.data.transactions.length){
-    res.json(response);
-    } else {
-    res.send({
-        status: "error",
-        error: "no transaction found with id " + req.params.id
-
-    });
+    let response;
+    console.log(req.params.id);
+    if(req.body.user != undefined) {
+    response = {
+                status: "success",
+                message: "GETTING transaction",
+                data: {
+                    transactions: await Transaction.find({$and: [ 
+                                                            {$or: [
+                                                                { sender: req.body.user }, 
+                                                                { receiver: req.body.user }
+                                                            ]} , 
+                                                            { _id: req.params.id } 
+                                                        ]})
+                }
     }
+    if (response.data.transactions.length){
+        res.json(response);
+        } else {
+        res.send({
+            status: "error",
+            error: "No transaction found"
+    
+        });
+        }
+    } 
+    else if(req.body.user == undefined) {
+    res.send({
+                status: "error",
+                message: "No Authentication"
+            })
+    };
 }
 
 const getByUser = async (req, res) => {
