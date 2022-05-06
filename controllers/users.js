@@ -1,4 +1,5 @@
 const User = require('../models/user');
+const bcrypt = require('bcryptjs');
 
 //GET
 // const getById = async (req, res) => {
@@ -29,20 +30,41 @@ const User = require('../models/user');
 //     };
 // }
 
+//login
+const login = async (req, res) => {
+    let response;
+    let user = await User.find({ email: req.body.email });
+    user = user[0];
+    if(bcrypt.compareSync(req.body.password, user.password)) {
+        response = {
+            status: "success",
+            message: "Logging in"
+        }
+    res.json(response);
+    } 
+    else {
+    res.send({
+                status: "error",
+                message: "Incorrect password"
+            })
+    };
+}
 
 //POST
 const create = async (req, res) => {
     let firstname = req.body.firstname;
     let lastname = req.body.lastname;
-    let password = req.body.password;
+    let email = req.body.email;
+    let password = bcrypt.hashSync(req.body.password, 10);
     let u = new User();
     u.firstname = firstname;
     u.lastname = lastname;
+    u.email = email;
     u.password = password;
     u.balance = 100;
 
     // check if something is missing
-    if ( u.firstname != "" || u.lastname != "" || u.password != ""){
+    if ( u.firstname != "" || u.lastname != "" || u.email != "" || u.password != ""){
     await u.save();
     res.send({
         status: "success",
@@ -62,6 +84,12 @@ const create = async (req, res) => {
         error: "please provide a last name"
     });
     }
+    else if (u.email == ""){
+    res.send({
+        status: "error",
+        error: "please provide an email"
+    });
+    }
     else {
     res.send({
         status: "error",
@@ -72,3 +100,4 @@ const create = async (req, res) => {
 
 // module.exports.getById = getById;
 module.exports.create = create;
+module.exports.login = login;
