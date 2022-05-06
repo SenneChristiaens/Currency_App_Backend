@@ -1,5 +1,6 @@
 const express = require('express');
 const transactionsRouter = require('./routers/transactions');
+const usersRouter = require('./routers/users');
 const mongoose = require('mongoose');
 const cors = require('cors');
 // mongoose.connect('mongodb://localhost:27017/');
@@ -13,7 +14,7 @@ app.set('view engine', 'pug');
 app.use(cors());
 app.use(express.json());
 app.use("/api/v1/transactions", transactionsRouter);
-// app.use("/api/v1/users", transactionsRouter);
+app.use("/api/v1/users", usersRouter);
 
 //REST
 app.get('/', (req, res) => {
