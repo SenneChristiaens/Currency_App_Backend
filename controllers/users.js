@@ -1,5 +1,8 @@
 const User = require('../models/user');
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+
+const secret = `DKjYb*_hszHTC=jQ>-#@Q%-^wldJ'a`;
 
 //GET
 // const getById = async (req, res) => {
@@ -29,17 +32,40 @@ const bcrypt = require('bcryptjs');
 //             })
 //     };
 // }
+const getByToken = async (req, res) => {
+    let decoded;
+    try {
+        decoded = jwt.verify(req.body.token, secret);
+
+        res.send({
+            status: "success",
+            data: decoded
+        });
+    } catch (e) {
+        res.send({
+            status: "error",
+            message: "Incorrect token"
+        })
+    }
+};
+
 
 //login
 const login = async (req, res) => {
     let response;
-    let user = await User.find({ email: req.body.email });
+    let user = await User.find({ email: req.body.email._value });
     user = user[0];
-    if(bcrypt.compareSync(req.body.password, user.password)) {
+    if(user != undefined && bcrypt.compareSync(req.body.password._value, user.password)) {
+        let jwtoken = jwt.sign({ email: user.email, id: user._id, balance: user.balance, firstname: user.firstname, lastname: user.lastname }, secret);
         response = {
             status: "success",
-            message: "Logging in"
+            message: "Logging in",
+            data: {
+                token: jwtoken
+            }
         }
+        // let decoded = jwt.verify(jwtoken, secret);
+        // console.log(decoded);
     res.json(response);
     } 
     else {
@@ -52,19 +78,21 @@ const login = async (req, res) => {
 
 //POST
 const create = async (req, res) => {
-    let firstname = req.body.firstname;
-    let lastname = req.body.lastname;
-    let email = req.body.email;
-    let password = bcrypt.hashSync(req.body.password, 10);
+    let firstname = req.body.firstname._value;
+    let lastname = req.body.lastname._value;
+    let email = req.body.email._value;
+    let password = bcrypt.hashSync(req.body.password._value, 10);
     let u = new User();
     u.firstname = firstname;
     u.lastname = lastname;
     u.email = email;
     u.password = password;
     u.balance = 100;
+    let checkUser = await User.find({ email: req.body.email._value });
+    checkUser = checkUser[0];
 
     // check if something is missing
-    if ( u.firstname != "" || u.lastname != "" || u.email != "" || u.password != ""){
+    if (checkUser == undefined && (u.firstname != "" || u.lastname != "" || u.email != "" || u.password != "")){
     await u.save();
     res.send({
         status: "success",
@@ -90,10 +118,22 @@ const create = async (req, res) => {
         error: "please provide an email"
     });
     }
-    else {
+    else if (u.password == ""){
     res.send({
         status: "error",
         error: "please provide a password"
+    });
+    }
+    else if (checkUser != undefined){
+    res.send({
+        status: "error",
+        error: "email is already in use"
+    });
+    }
+    else {
+    res.send({
+        status: "error",
+        error: "Something went wrong"
     });
     }
 }
@@ -101,3 +141,4 @@ const create = async (req, res) => {
 // module.exports.getById = getById;
 module.exports.create = create;
 module.exports.login = login;
+module.exports.getByToken = getByToken;
