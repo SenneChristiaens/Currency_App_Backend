@@ -1,5 +1,6 @@
 const User = require('../models/user');
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 
 //GET
 // const getById = async (req, res) => {
@@ -33,13 +34,20 @@ const bcrypt = require('bcryptjs');
 //login
 const login = async (req, res) => {
     let response;
-    let user = await User.find({ email: req.body.email });
+    let user = await User.find({ email: req.body.email._value });
     user = user[0];
-    if(bcrypt.compareSync(req.body.password, user.password)) {
+    if(bcrypt.compareSync(req.body.password._value, user.password)) {
+        const secret = `DKjYb*_hszHTC=jQ>-#@Q%-^wldJ'a`;
+        let jwtoken = jwt.sign({ email: user.email, id: user._id }, secret);
         response = {
             status: "success",
-            message: "Logging in"
+            message: "Logging in",
+            data: {
+                token: jwtoken
+            }
         }
+        // let decoded = jwt.verify(jwtoken, secret);
+        // console.log(decoded);
     res.json(response);
     } 
     else {
@@ -52,10 +60,10 @@ const login = async (req, res) => {
 
 //POST
 const create = async (req, res) => {
-    let firstname = req.body.firstname;
-    let lastname = req.body.lastname;
-    let email = req.body.email;
-    let password = bcrypt.hashSync(req.body.password, 10);
+    let firstname = req.body.firstname._value;
+    let lastname = req.body.lastname._value;
+    let email = req.body.email._value;
+    let password = bcrypt.hashSync(req.body.password._value, 10);
     let u = new User();
     u.firstname = firstname;
     u.lastname = lastname;

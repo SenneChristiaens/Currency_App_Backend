@@ -7,7 +7,7 @@ const cors = require('cors');
 mongoose.connect('mongodb+srv://admin:admin@backend.flad1.mongodb.net/currencyapp?retryWrites=true&w=majority');
 
 const app = express();
-const port = 3000;
+const port = 3001;
 // app.set('view engine', 'html');
 app.set('view engine', 'pug');
 
