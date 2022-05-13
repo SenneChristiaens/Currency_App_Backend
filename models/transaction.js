@@ -4,8 +4,7 @@ const Schema = mongoose.Schema;
 const transactionSchema = new Schema({
     sender:  String,
     receiver: String,
-    amount: String,
-    id: String
+    amount: String
 });
 
 

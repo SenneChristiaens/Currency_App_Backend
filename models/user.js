@@ -2,10 +2,11 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const userSchema = new Schema({
-    username:  String,
+    firstname:  String,
+    lastname: String,
+    email: String,
     password: String,
-    balance: String,
-    id: String
+    balance: String
 });
 
 userSchema.statics.getSize = async function() {
