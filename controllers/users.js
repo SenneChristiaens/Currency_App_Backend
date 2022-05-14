@@ -45,9 +45,32 @@ const getByToken = async (req, res) => {
         res.send({
             status: "error",
             message: "Incorrect token"
-        })
+        });
     }
 };
+
+const getNameByEmail = async (req, res) => {
+    try {
+        jwt.verify(req.body.token, secret);
+
+        let searchUser = await User.find({ email: req.body.email });
+        searchUser = searchUser[0];
+        res.send({
+            status: "success",
+            message: "GETTING name from email " + req.body.email,
+            data: {
+                firstname: searchUser.firstname,
+                lastname: searchUser.lastname
+            }
+        });
+    } catch (e) {
+        res.send({
+            status: "error",
+            message: "Incorrect token"
+        });
+    }
+
+}
 
 
 //login
@@ -142,3 +165,4 @@ const create = async (req, res) => {
 module.exports.create = create;
 module.exports.login = login;
 module.exports.getByToken = getByToken;
+module.exports.getNameByEmail = getNameByEmail;

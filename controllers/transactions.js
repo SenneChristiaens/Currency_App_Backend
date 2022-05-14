@@ -10,7 +10,6 @@ const get = async (req, res) => {
     let decoded;
     try {
         decoded = jwt.verify(req.body.token, secret);
-        console.log(decoded);
     } catch (e) {
         console.log(e);
     }
@@ -19,7 +18,7 @@ const get = async (req, res) => {
                 status: "success",
                 message: "GETTING transactions",
                 data: {
-                    transactions: await Transaction.find({ $or: [{ sender: decoded.firstname }, { receiver: decoded.firstname }] })
+                    transactions: await Transaction.find({ $or: [{ sender: decoded.email }, { receiver: decoded.email }] })
                 }
     }
     if (response.data.transactions.length){
