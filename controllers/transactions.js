@@ -1,14 +1,24 @@
 const Transaction = require('../models/transaction');
+const jwt = require('jsonwebtoken');
+
+const secret = `DKjYb*_hszHTC=jQ>-#@Q%-^wldJ'a`;
+
 
 //GET
 const get = async (req, res) => {
     let response;
-    if(req.body.user != undefined) {
+    let decoded;
+    try {
+        decoded = jwt.verify(req.body.token, secret);
+    } catch (e) {
+        console.log(e);
+    }
+    if(decoded != undefined) {
     response = {
                 status: "success",
                 message: "GETTING transactions",
                 data: {
-                    transactions: await Transaction.find({ $or: [{ sender: req.body.user }, { receiver: req.body.user }] })
+                    transactions: await Transaction.find({ $or: [{ sender: decoded.email }, { receiver: decoded.email }] })
                 }
     }
     if (response.data.transactions.length){
