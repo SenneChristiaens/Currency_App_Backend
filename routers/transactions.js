@@ -1,11 +1,9 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const transactionsController = require('../controllers/transactions');
+const transactionsController = require("../controllers/transactions");
 
-
-router.post('/', transactionsController.get);
-router.post('/create', transactionsController.create);
-router.get('/:id', transactionsController.getById);
-
+router.post("/", transactionsController.get);
+router.post("/create", transactionsController.create);
+router.get("/:id", transactionsController.getById);
 
 module.exports = router;
