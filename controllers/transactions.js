@@ -1,5 +1,6 @@
 const Transaction = require("../models/transaction");
 const jwt = require("jsonwebtoken");
+const User = require("./users");
 
 const secret = `DKjYb*_hszHTC=jQ>-#@Q%-^wldJ'a`;
 
@@ -37,6 +38,7 @@ const get = async (req, res) => {
     });
   }
 };
+
 
 const getById = async (req, res) => {
   let response;
@@ -100,11 +102,12 @@ const create = async (req, res) => {
   t.sender = sender;
   t.receiver = receiver;
   t.amount = amount;
-  // t.id =  await this.get.data.transactions.size();
 
   // check if transaction is empty
   if (t.sender != "" || t.receiver != "" || t.amount != "") {
     await t.save();
+    User.updateBalance(t.sender, t.amount*-1);
+    User.updateBalance(t.receiver, t.amount*1);
     res.send({
       status: "success",
       message: "Posting API transaction",

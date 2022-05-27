@@ -6,7 +6,7 @@ const userSchema = new Schema({
   lastname: String,
   email: String,
   password: String,
-  balance: String,
+  balance: Number
 });
 
 userSchema.statics.getSize = async function () {

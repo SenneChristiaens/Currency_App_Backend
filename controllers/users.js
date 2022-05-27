@@ -4,34 +4,6 @@ const jwt = require("jsonwebtoken");
 
 const secret = `DKjYb*_hszHTC=jQ>-#@Q%-^wldJ'a`;
 
-//GET
-// const getById = async (req, res) => {
-//     let response;
-//     if(req.body.user != undefined) {
-//     response = {
-//                 status: "success",
-//                 message: "GETTING transaction",
-//                 data: {
-//                     transactions: await User.find( $and[ {$or: [{ sender: req.body.user }, { receiver: req.query.user }]}, {_id: req.query.id} ])
-//                 }
-//     }
-//     if (response.data.transactions.length){
-//         res.json(response);
-//         } else {
-//         res.send({
-//             status: "error",
-//             error: "No transaction found"
-
-//         });
-//         }
-//     }
-//     else if(req.body.user == undefined) {
-//     res.send({
-//                 status: "error",
-//                 message: "No Authentication"
-//             })
-//     };
-// }
 const getByToken = async (req, res) => {
   let decoded;
   try {
@@ -69,6 +41,15 @@ const getNameByEmail = async (req, res) => {
       message: "Incorrect token",
     });
   }
+};
+
+const updateBalance = async function (e, b)  {
+  let user = await User.find({ email: e });
+  user = user[0];
+  let bal = user.balance;
+  let newBal = parseInt(bal) + parseInt(b);
+  let u = await User.findOneAndUpdate({ email: e }, { balance: newBal }, { new: true });
+  console.log(u);
 };
 
 //login
@@ -171,3 +152,4 @@ module.exports.create = create;
 module.exports.login = login;
 module.exports.getByToken = getByToken;
 module.exports.getNameByEmail = getNameByEmail;
+module.exports.updateBalance = updateBalance;
