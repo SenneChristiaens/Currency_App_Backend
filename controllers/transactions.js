@@ -1,6 +1,7 @@
 const Transaction = require("../models/transaction");
 const jwt = require("jsonwebtoken");
-const User = require("./users");
+const Users = require("./users");
+const User = require("../models/user");
 
 const secret = `DKjYb*_hszHTC=jQ>-#@Q%-^wldJ'a`;
 
@@ -42,7 +43,6 @@ const get = async (req, res) => {
 
 const getById = async (req, res) => {
   let response;
-  console.log(req.params.id);
   if (req.body.user != undefined) {
     response = {
       status: "success",
@@ -100,17 +100,33 @@ const create = async (req, res) => {
   let amount = req.body.amount;
   let t = new Transaction();
   t.sender = sender;
-  t.receiver = receiver;
-  t.amount = amount;
+  t.receiver = receiver._value;
+  t.amount = amount._value;
+
+  let user = await User.find({ email: sender });
+  user = user[0];
+  console.log(user);
+  let jwtoken = jwt.sign(
+    {
+      email: user.email,
+      id: user._id,
+      balance: parseInt(user.balance) - parseInt(t.amount),
+      firstname: user.firstname,
+      lastname: user.lastname,
+    },
+    secret
+  );
 
   // check if transaction is empty
-  if (t.sender != "" || t.receiver != "" || t.amount != "") {
+  if (t.sender != "" && t.receiver != "" && t.amount != "" && (parseInt(user.balance) >= parseInt(t.amount))) {
+    Users.updateBalance(t.sender, t.amount*-1);
+    Users.updateBalance(t.receiver, t.amount*1);
     await t.save();
-    User.updateBalance(t.sender, t.amount*-1);
-    User.updateBalance(t.receiver, t.amount*1);
+
     res.send({
       status: "success",
       message: "Posting API transaction",
+      data: jwtoken
     });
   } else if (t.sender == "") {
     res.send({

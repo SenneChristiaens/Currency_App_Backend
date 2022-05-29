@@ -49,7 +49,6 @@ const updateBalance = async function (e, b)  {
   let bal = user.balance;
   let newBal = parseInt(bal) + parseInt(b);
   let u = await User.findOneAndUpdate({ email: e }, { balance: newBal }, { new: true });
-  console.log(u);
 };
 
 //login
