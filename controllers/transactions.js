@@ -100,8 +100,8 @@ const create = async (req, res) => {
   let amount = req.body.amount;
   let t = new Transaction();
   t.sender = sender;
-  t.receiver = receiver._value;
-  t.amount = amount._value;
+  t.receiver = receiver;
+  t.amount = amount;
 
   let user = await User.find({ email: sender });
   user = user[0];
@@ -118,6 +118,10 @@ const create = async (req, res) => {
   );
 
   // check if transaction is empty
+  console.log(t.sender);
+  console.log(t.receiver);
+  console.log(t.amount);
+  console.log(user.balance);
   if (t.sender != "" && t.receiver != "" && t.amount != "" && (parseInt(user.balance) >= parseInt(t.amount))) {
     Users.updateBalance(t.sender, t.amount*-1);
     Users.updateBalance(t.receiver, t.amount*1);
