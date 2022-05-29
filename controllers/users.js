@@ -4,6 +4,34 @@ const jwt = require("jsonwebtoken");
 
 const secret = `DKjYb*_hszHTC=jQ>-#@Q%-^wldJ'a`;
 
+const getAll = async (req, res) => {
+  try {
+    jwt.verify(req.body.token, secret);
+    let users = [];
+    let userMap = new Map();
+
+    users = await User.find({});
+    users.forEach(u => {
+      userMap.set(u.email, u.firstname + " " + u.lastname);
+    });
+    userMap = Object.fromEntries(userMap);
+
+
+    res.send({
+      status: "success",
+      message: "GETTING all users",
+      data: {
+        users: userMap
+      },
+    });
+  } catch (e) {
+    res.send({
+      status: "error",
+      message: e,
+    });
+  }
+};
+
 const getByToken = async (req, res) => {
   let decoded;
   try {
@@ -152,3 +180,4 @@ module.exports.login = login;
 module.exports.getByToken = getByToken;
 module.exports.getNameByEmail = getNameByEmail;
 module.exports.updateBalance = updateBalance;
+module.exports.getAll = getAll;
