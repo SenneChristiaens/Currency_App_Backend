@@ -40,7 +40,6 @@ const get = async (req, res) => {
   }
 };
 
-
 const getById = async (req, res) => {
   let response;
   if (req.body.user != undefined) {
@@ -122,15 +121,20 @@ const create = async (req, res) => {
   console.log(t.receiver);
   console.log(t.amount);
   console.log(user.balance);
-  if (t.sender != "" && t.receiver != "" && t.amount != "" && (parseInt(user.balance) >= parseInt(t.amount))) {
-    Users.updateBalance(t.sender, t.amount*-1);
-    Users.updateBalance(t.receiver, t.amount*1);
+  if (
+    t.sender != "" &&
+    t.receiver != "" &&
+    t.amount != "" &&
+    parseInt(user.balance) >= parseInt(t.amount)
+  ) {
+    Users.updateBalance(t.sender, t.amount * -1);
+    Users.updateBalance(t.receiver, t.amount * 1);
     await t.save();
 
     res.send({
       status: "success",
       message: "Posting API transaction",
-      data: jwtoken
+      data: jwtoken,
     });
   } else if (t.sender == "") {
     res.send({

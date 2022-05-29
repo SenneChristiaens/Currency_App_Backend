@@ -11,17 +11,16 @@ const getAll = async (req, res) => {
     let userMap = new Map();
 
     users = await User.find({});
-    users.forEach(u => {
+    users.forEach((u) => {
       userMap.set(u.email, u.firstname + " " + u.lastname);
     });
     userMap = Object.fromEntries(userMap);
-
 
     res.send({
       status: "success",
       message: "GETTING all users",
       data: {
-        users: userMap
+        users: userMap,
       },
     });
   } catch (e) {
@@ -71,12 +70,16 @@ const getNameByEmail = async (req, res) => {
   }
 };
 
-const updateBalance = async function (e, b)  {
+const updateBalance = async function (e, b) {
   let user = await User.find({ email: e });
   user = user[0];
   let bal = user.balance;
   let newBal = parseInt(bal) + parseInt(b);
-  let u = await User.findOneAndUpdate({ email: e }, { balance: newBal }, { new: true });
+  let u = await User.findOneAndUpdate(
+    { email: e },
+    { balance: newBal },
+    { new: true }
+  );
 };
 
 //login
